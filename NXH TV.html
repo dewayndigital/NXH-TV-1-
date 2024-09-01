@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NXH TV</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #222;
+        }
+
+        #tv-container {
+            width: 80%;
+            max-width: 620px;
+            height: 60%;
+            max-height: 420px;
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(130, 192, 206, 0.8);
+            animation: glowBorder 2s infinite alternate;
+            position: relative;
+        }
+
+        #tv {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            color: white;
+            transition: opacity 0.5s ease;
+        }
+
+        #initial-text {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        #glitch-text {
+            font-size: 2em;
+            animation: glitch 1s infinite;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+        }
+
+        #control-panel {
+            height: 50px;
+            background-color: #333;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-radius: 0 0 10px 10px;
+            position: relative;
+        }
+
+        .control-button {
+            background-color: #444;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-size: 0.8em;
+            transition: background-color 0.3s;
+        }
+
+        .control-button:hover {
+            background-color: #555;
+        }
+
+        .control-speaker {
+            width: 24px;
+            height: 24px;
+            background-color: #666;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-speaker::before {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 8px;
+            border: solid 2px #fff;
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+
+        .music-note {
+            position: absolute;
+            bottom: 0;
+            opacity: 0;
+            font-size: 1.2em;
+            color: #fd4;
+            animation: floatUp 3s ease-in-out infinite;
+        }
+
+        @keyframes glowBorder {
+            from {
+                box-shadow: 0 0 30px #82c0ce, 0 0 40px #82c0ce, 0 0 50px #82c0ce;
+            }
+
+            to {
+                box-shadow: 0 0 70px #82c0ce, 0 0 100px #82c0ce, 0 0 130px #82c0ce;
+            }
+        }
+
+        @keyframes glitch {
+            0%, 20%, 40%, 60%, 80%, 100% {
+                transform: translate(0, 0);
+            }
+
+            10%, 30%, 50%, 70%, 90% {
+                transform: translate(-3px, 3px);
+            }
+
+            15%, 45%, 75% {
+                transform: translate(5px, -5px);
+            }
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="tv-container">
+        <div id="tv">
+            <div id="screen">
+                <div id="initial-text">NextHustle</div>
+                <div id="glitch-text" style="display: none;">NXH4L</div>
+                <iframe id="video" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+            <div id="control-panel">
+                <button class="control-button" onclick="togglePower()">Power</button>
+                <div class="control-speaker" id="speaker">
+                    <span class="music-note" id="note1" style="display: none;">♪</span>
+                    <span class="music-note" id="note2" style="display: none;">♫</span>
+                </div>
+                <button class="control-button" onclick="changeChannel()">Switch Channel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const videos = [
+            'https://www.youtube.com/embed/cWgdjX3BIIA?si=Z_mQzDYDUIeT6KMz',
+            'https://www.youtube.com/embed/bYqdjilP9uU?si=JGX9-hg9fyj69Nph',
+            'https://www.youtube.com/embed/vQNh4Cl3sp8?si=PrYvqra3EYr74XwM',
+            'https://www.youtube.com/embed/qitR_jEWMdg?si=DYch6ZYa3trTFaSI',
+            'https://www.youtube.com/embed/vfq8g9cJ5F0?si=FgLWlpoQaav2MGZ8',
+            'https://www.youtube.com/embed/NPsXyA1_RCA?si=-HJD8gL2iYePCawi',
+            'https://www.youtube.com/embed/9uMBbV2B0hE?si=qItVPZRLlmjxTTvc',
+            'https://www.youtube.com/embed/veGvT1BVlBY?si=swcO9_GBr-0bUckO',
+            'https://www.youtube.com/embed/_HcR_an32rI?si=scv51e4FP4BkW1EN',
+            'https://www.youtube.com/embed/NVNwute8vh4?si=a3E4ujxp2FCkirfq',
+            'https://www.youtube.com/embed/38gvm0VaJTc?si=IMAMZVSA3DFj1Gfg',
+            'https://www.youtube.com/embed/ntvQo9ZSHB0?si=Djh57_nrbBNX3oaY',
+            'https://www.youtube.com/embed/AtiRywFurt0?si=5MuUW5NXMtkDgfhd',
+            'https://www.youtube.com/embed/C82EBob0FEM?si=E62jHWGJr_pmLFM6',
+            'https://www.youtube.com/embed/HThoJ6RbjGY?si=3itGLRy8wsrNFxjm',
+            'https://www.youtube.com/embed/2rELuKKGRDQ?si=4Snt5eCpXqHBvQMA'
+        ];
+
+        let powerOn = false;
+        const screen = document.getElementById('screen');
+        const videoFrame = document.getElementById('video');
+        const glitchText = document.getElementById('glitch-text');
+        const initialText = document.getElementById('initial-text');
+        const notes = [document.getElementById('note1'), document.getElementById('note2')];
+
+        function changeChannel() {
+            if (!powerOn) return;
+            glitchText.style.display = 'none';  // Hide glitch text when switching channel
+            videoFrame.style.display = 'block';
+            showMusicNotes(true);
+
+            const randomIndex = Math.floor(Math.random() * videos.length);
+            videoFrame.src = videos[randomIndex] + '&autoplay=1';
+        }
+
+        function togglePower() {
+            powerOn = !powerOn;
+            if (powerOn) {
+                initialText.style.display = 'none';
+                glitchText.style.display = 'block';  // Show glitch text when powered on
+                videoFrame.style.display = 'none';
+                showMusicNotes(false);
+
+                // Automatically switch channel after a few seconds of glitching text:
+                setTimeout(() => {
+                    if (powerOn) changeChannel();
+                }, 2000); // 2000ms is 2 seconds
+            } else {
+                glitchText.style.display = 'none';
+                initialText.style.display = 'block';
+                videoFrame.style.display = 'none';
+                videoFrame.src = '';
+                showMusicNotes(false);
+            }
+        }
+
+        function showMusicNotes(visible) {
+            notes.forEach(note => note.style.display = visible ? 'inline' : 'none');
+        }
+    </script>
+</body>
+
+</html>
